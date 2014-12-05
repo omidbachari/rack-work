@@ -63,7 +63,7 @@ localhost - - [05/Dec/2014:10:35:05 EST] "GET / HTTP/1.1" 500 320
 
 The request made it to the server! But it appears we got a code 500 Internal Server Error response, because WEBrick tried to call #call on our app, which is not a method available to the Nil Class. Our app needs to be an object that has the #call method.
 
-Let's try to fix that. You'll see that I'm going to be hacky. I'm just going to follow the error and see where it takes us. When we have finished this part of the exercise, we'll stop being hacky. Here is what's in **app.rb** now.
+Let's try to fix that in a hacky way. We're just going to follow the error and see where it takes us. When we have finished this part of the exercise, we'll stop being hacky. Here is what's in **app.rb** now.
 
 ```
 require 'rack'
@@ -208,8 +208,6 @@ This will have the same apparent behavior as our previous configuration. And now
 
 # Challenge
 
-Right now, our server responds with ```Hello, world!``` in the browser. To anything. That means ```localhost:8080```, ```localhost:8080/foo``` and ```localhost:8080/bar``` all give us ```Hello, world!```.
+Right now, our server responds with ```Hello, world!``` in the browser. To anything. That means ```localhost:8080```, ```localhost:8080/foo``` and ```localhost:8080/bar``` all give us ```Hello, world!```. The server is sending us the same content, every time.
 
-Since our environment contains the value of ```PATH_INFO```, we know we have access to the path before we return an HTTP response array. However, we currently don't have any intelligent code distinguishing among the different values of ```PATH_INFO```.
-
-We can do better than that. Let's try to build a rack app that gives us different routes, and responds with different strings accordingly.
+Since our environment contains the value of ```PATH_INFO```, we know we have access to the path. Our rack app should provide different behavior, depending on the value of ```PATH_INFO```. Let's build a rack app that gives us different routes, and responds with different strings accordingly.

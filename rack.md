@@ -211,3 +211,19 @@ This will have the same apparent behavior as our previous configuration. And now
 Right now, our server responds with ```Hello, world!``` in the browser. To anything. That means ```localhost:8080```, ```localhost:8080/foo``` and ```localhost:8080/bar``` all give us ```Hello, world!```. The server is sending us the same content, every time.
 
 Since our environment contains the value of ```PATH_INFO```, we know we have access to the path. Our rack app should provide different behavior, depending on the value of ```PATH_INFO```. Let's build a rack app that gives us different routes, and responds with different strings accordingly.
+
+###First Steps
+
+Creating a rack app in the non-hacky way required us to use a proc object. That is because a proc object returns a block of code, and the Proc Class provides us with the method #call, into which we can pass the environment.
+
+Let's re-write our rack app above, without changing its behavior or actions. The original looked like this:
+
+```
+app = Proc.new { [200, {"Content-Type" => "text/html"}, ["Hello, world!"]] }
+```
+And this is the exact same thing:
+```
+app = Proc.new do |env|
+  [200, {"Content-Type" => "text/html"}, ["Hello, world!"]]
+end
+```

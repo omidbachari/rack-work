@@ -208,10 +208,8 @@ This will have the same apparent behavior as our previous configuration. And now
 
 # Challenge
 
-Right now, our server responds with ```Hello, world!``` in the browser. To anything. That means ```localhost:8080```, ```localhost:8080/foo``` and ```localhost:8080/bar``` all give us ```Hello, world!```. Since our environment contains the value of ```PATH_INFO```, we know we have access to the path before we return an HTTP response array. However, we currently don't have any intelligent code distinguishing among the different values of ```PATH_INFO```.
+Right now, our server responds with ```Hello, world!``` in the browser. To anything. That means ```localhost:8080```, ```localhost:8080/foo``` and ```localhost:8080/bar``` all give us ```Hello, world!```.
+
+Since our environment contains the value of ```PATH_INFO```, we know we have access to the path before we return an HTTP response array. However, we currently don't have any intelligent code distinguishing among the different values of ```PATH_INFO```.
 
 We can do better than that. Let's try to build a rack app that gives us different routes, and responds with different strings accordingly.
-
-
-
-In short, our app isn't giving our server any intelligent behavior. We have simply hard coded the HTTP response with the array ```[200, {"Content-Type" => "text/html"}, ["Hello, world!"]]```.

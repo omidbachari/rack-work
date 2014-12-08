@@ -6,22 +6,22 @@ According to the official README:
 
 "Rack provides a minimal, modular and adaptable interface for developing web applications in Ruby. By wrapping HTTP requests and responses in the simplest way possible, it unifies and distills the API for web servers, web frameworks, and software in between (the so-called middleware) into a single method call." - The official Rack GitHub repo [can be found here.](https://github.com/rack/rack)
 
-The key takeaway is that a rack application is just a Ruby object. This object sits between, e.g., Rails and a server. Without a web framework like Rails, we can also create a rack app directly. That's what we will do here.
+The key takeaway is that a rack application is just a Ruby object. It's Ruby code. This object sits between, e.g., Rails and a server. Without a web framework like Rails, we can also create a rack app directly. That's what we will do here.
 
-## The Big Picture
+## The Road Map
 
 Before we dive into the technical details, it would help to illuminate how the HTTP process and rack application work. That will inform how we build our first rack app. Let's break down the basic process:
 
 1. We send an HTTP request.
-2. The server parses the HTTP request and passes it our rack app.
+2. The server parses the HTTP request and passes it into our rack app.
 3. Our rack app returns a response to the server.
 4. The server sends a response back to the browser.
 
-With that process as our road map, we can begin to build and understand our first rack app.
+At heart, the road map illustrates the purpose of rack. With our browser and server running, the browser sends a request by pointing to a URL. The server then provides us some magic to clean up the request and turn it into something we can use. That's where rack finds it's place. Rack is the first stop for that parsed and ready HTTP request. Rack can then take the parsed request and hand it to Rails or Sinatra. For this assignment, our rack app will provide all of the behavior, in and of itself. Since a rack app is just Ruby code, that means we have an opportunity to use this easy to learn and expressive language to determine the response we'll send to the server. The server then sends (usually) a string of HTML back to the browser for rendering.
 
 ## Building a Rack Application
 
-*A note about the web server: The web server and the rack application are two separate things. The web server is responsible for taking information back and forth from the browser. The web server parses the HTTP request and response into usable information. The rack application is responsible for taking in the parsed HTTP request and returning a response to the server.*
+<!-- *Emphasis about the web server: The web server and the rack application are two separate things. The web server is responsible for taking information back and forth from the browser. The web server parses the HTTP request and response into usable information. The rack application is responsible for taking in the parsed HTTP request and returning a response to the server.* -->
 
 ### Send HTTP Request
 
@@ -47,12 +47,12 @@ When we run the app, we should see something like the following:
 [2014-12-05 10:34:58] INFO  WEBrick::HTTPServer#start: pid=29912 port=8080
 ```
 
-Using our browser, go to the default WEBrick port, which is identified above: ```localhost:8080```. That sends an HTTP request to our server.
+Using our browser, go to the default WEBrick port, which is identified above: ```localhost:8080```. That sends an HTTP request to our server, which is the first important event in our road map.
 
 ### HTTP Request Parsed and Passed into Rack App
 
 
-Since our local app variable is set to ```nil```, we must be expecting an error. It's going to be instructive. When we try to go to ```localhost:8080```, this error appears in the console.
+Since our local app variable is set to ```nil```, we are expecting an error. It's going to be instructive. When we try to go to ```localhost:8080```, this error appears in the console.
 
 ```
 [2014-12-05 10:35:05] ERROR NoMethodError: undefined method `call' for nil:NilClass
@@ -61,7 +61,7 @@ localhost - - [05/Dec/2014:10:35:05 EST] "GET / HTTP/1.1" 500 320
 - -> /
 ```
 
-The request made it to the server! But it appears we got a code 500 Internal Server Error response, because WEBrick tried to call #call on our app, which is not a method available to the Nil Class. Our app needs to be an object that has the #call method.
+The request made it to the server! But it appears we got a code 500 Internal Server Error response, because WEBrick tried to call #call on our app, which is not a method available to the Nil Class. The error has taught us what the server is expecting. Our app needs to be an object that has the #call method.
 
 Let's try to fix that in a hacky way. We're just going to follow the error and see where it takes us. When we have finished this part of the exercise, we'll stop being hacky. Here is what's in **app.rb** now.
 
@@ -78,7 +78,7 @@ app = App.new
 Rack::Handler::WEBrick.run app
 
 ```
-If we restart the server and try to go to the port, we now get this response.
+Let's try the same actions and see if the error has changed in a helpful way. If we restart the server and try to go to the port, we now get this response.
 
 ```
 [2014-12-05 11:30:16] ERROR ArgumentError: wrong number of arguments (1 for 0)
@@ -87,11 +87,11 @@ app.rb:6:in `call'
 localhost - - [05/Dec/2014:11:30:16 EST] "GET / HTTP/1.1" 500 315
 - -> /
 ```
-So, the target has advanced. We have the right method, but the server tried to give it an argument, and we didn't define the method to take an argument.
+Interesting. The server expected #call and that's what we gave it. Now, the target has advanced. We have the right method, but the server tried to give it an argument, and we didn't define the method to take an argument.
 
-What is happening is that our server is trying to call #call on our app, and it's also trying to pass the parsed HTTP request into the #call method, as an argument. The parsed HTTP request is a hash called the **environment**.
+What is happening is that our server is trying to call #call on our app, and it's also trying to pass the parsed HTTP request into the #call method, as an argument. This is the next important event in our road map. Having the parsed HTTP request available in our app will later allow us to program all kinds of exciting behavior in response to the HTTP request. So, in what way is the HTTP request prepared for our use? The parsed HTTP request is a hash called the **environment**. A hash is a Ruby datastructure that we should know how to navigate.
 
-Let's provide for #call in our code, that takes an argument, and see what happens next. Since we know the server is going to pass the environment into #call, we should ```puts``` it. It would help to also call the #inspect method on the environment to see what the data structure looks like. Here is **app.rb**:
+Now, let's provide for #call in our code, that takes an argument, and see what happens next. Since we know the server is going to pass the environment into #call, we should ```puts``` it. It would help to also call the #inspect method on the environment to see what the data structure looks like. Here is **app.rb**:
 
 ```
 require 'rack'
@@ -141,11 +141,14 @@ When restarting the server and going to ```localhost:8080```, we got a couple of
   "REQUEST_PATH"=>"/"
 }
 ```
-The hash above is the environment, i.e., the parsed HTTP request that WEBrick is passing into the rack app. It has valuable information that we might be able to use. For example, ```"PATH_INFO"=>"/"``` and ```"REQUEST_METHOD"=>"GET"```.
+The hash above is the environment, i.e., the parsed HTTP request that WEBrick is passing into the rack app. It has valuable information that we might be able to use. For example, ```"PATH_INFO"=>"/"``` and ```"REQUEST_METHOD"=>"GET"```. This data is going to be the basis of our rack app's behavior.
 
-But let's keep building this app. After the custom #call method performed ```puts``` on the environment, it proceeded to try to work with the app. We see an instructive error, which returns us to the path we're on.
+Let's keep building. After the custom #call method performed ```puts``` on the environment, it proceeded to try to work with the app. We see another error and it's instructive, which returns us to the path we're on.
 
 ###Response to the Server
+
+Not only should we take in the environment, but we have to return something.
+
 ```
 [2014-12-05 11:56:13] ERROR NoMethodError: undefined method `each' for nil:NilClass
 ...
@@ -169,9 +172,9 @@ Rack::Handler::WEBrick.run app
 
 ```
 
-Our last error complained that there was no array to call #each on. Now, ```["Hello, world!"]``` stands in the place that the #each method was previously called by the server. Let's see if this cures the errors.
+Our last error complained that there was no array to call #each on. Now, ```["Hello, world!"]``` stands in the place that the #each method was previously called by the server. Let's see if this advances us to the next step.
 
-We will re-run the server and hope for the best. What we want is the response code 200 that we put in our array and we also want the page to be properly rendered in our browser. Our server says:
+We will re-run the server and hope for the best when we go to ```localhost:8080```. What we want is the response code 200 that we put in our array and we also want the page to be properly rendered in our browser. Our server says:
 
 ```
 localhost - - [05/Dec/2014:13:48:50 EST] "GET / HTTP/1.1" 200 2
@@ -192,19 +195,21 @@ So, we have no errors to speak of, and the HTTP request and response worked. Suc
 
 Now, what would the app look like if it weren't as hacky? We have peeked at the errors and the data being moved around, for our learning benefit. But we should no longer use our custom App Class.
 
-The Ruby Standard Library includes a Proc Class. A proc object already has the #call method, and it takes an argument in the way that the server wants to pass it in through #call.
+The Ruby Standard Library includes a Proc Class. A proc object already has the #call method, and it takes an argument in the way that the server wants to pass it in through #call. And a proc object returns a block of code that we define. Perfect.
 
 Let's change **app.rb** to reflect this approach.
 
 ```
 require 'rack'
 
-app = Proc.new { [200, {"Content-Type" => "text/html"}, ["Hello, world!"]] }
+app = Proc.new do |env|
+  [200, {"Content-Type" => "text/html"}, ["Hello, world!"]]
+end
 
 Rack::Handler::WEBrick.run app
 ```
 
-This will have the same apparent behavior as our previous configuration. And now, we better understand what magic is happening inside WEBrick. So, let's make a more useful app, which is the challenge of this lesson.
+This will have the same apparent behavior as our previous configuration, with a less unorthodox approach. You'll notice that Proc syntax and behaviour aligns nicely with what WEBrick expects from our app. So, let's make a more useful app, which is the challenge of this lesson.
 
 # Challenge
 
@@ -212,18 +217,24 @@ Right now, our server responds with ```Hello, world!``` in the browser. To anyth
 
 Since our environment contains the value of ```PATH_INFO```, we know we have access to the path. Our rack app should provide different behavior, depending on the value of ```PATH_INFO```. Let's build a rack app that gives us different routes, and responds with different strings accordingly.
 
+Specifically, we want "/beers" to return this string of HTML: ```<h1>BEERS</h1>```. Every other path should return ```<h1>404: Page does not exist.</h1>```.
+
 ###First Steps
 
 Creating a rack app in the non-hacky way required us to use a proc object. That is because a proc object returns a block of code, and the Proc Class provides us with the method #call, into which we can pass the environment.
 
-Let's re-write our rack app above, without changing its behavior or actions. The original looked like this:
+In our block, we have access to ```env```.
 
 ```
-app = Proc.new { [200, {"Content-Type" => "text/html"}, ["Hello, world!"]] }
-```
-And this is the exact same thing:
-```
+require 'rack'
+
 app = Proc.new do |env|
+  # We can call env in here.
+  # We can use flow control to determine what block of code to return, in the same format as the array below.
   [200, {"Content-Type" => "text/html"}, ["Hello, world!"]]
 end
+
+Rack::Handler::WEBrick.run app
 ```
+
+Basic Ruby logic can provide us with the solution that we're looking for. Good luck.

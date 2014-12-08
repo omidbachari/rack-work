@@ -239,6 +239,24 @@ Good luck.
 
 # BEERS: Implementing Parameters - Challenge 2
 
-Now that we know how to create different behavior depending on the path found in the environment, the next step is to use some of the information from the path to inform the string that we send to the server from our rack app. We need to take information dynamically from the URL and display it on our page for our predetermined "/beers" route.
+Now that we know how to create different behavior depending on the path found in the environment, the next step is to use some of the information from the path to inform the string that we send to the server from our rack app. We need to take information dynamically from the URL, as a **parameter**, and move it through our rack app. Our goal is to display it on our page for our predetermined "/beers" routes.
 
-Specifically, we want to point our browser to "/beers/pilsner" or "/beers/IPA" or "/beers/stout" and be able to see "PILSNER" or "IPA" or "STOUT" as our headline. Every other path should return ```<h1>404: Page does not exist.</h1>```. Good luck.
+Specifically, we want to point our browser to "/beers/pilsner" or "/beers/IPA" or "/beers/stout" and be able to see "PILSNER" or "IPA" or "STOUT" as our headlines, respectively. Every other path should return ```<h1>404: Page does not exist.</h1>```. Good luck.
+
+# Parameters II: Implementing Rock, Paper, Scissors - Challenge 3
+
+Let's shelve our BEERS app for now. For this challenge, using the parameters given to us in the URL, we want to implement a game of Rock, Paper, Scissors. The rules of this game can be found [here](#).
+
+The user will decide what she wants to throw by going to one of the three paths: "/rock" or "/paper" or "/scissors". The rack app will use Ruby logic to randomly respond with a throw of its own, which will be enough information to determine the winner.
+
+The output in the browser should look like this in raw HTML:
+
+```
+<h1>Rock, Paper, Scissors</h1>
+  <ul>
+    <li>The player throws: Paper</li>
+    <li>The computer throws: Rock</li>
+    <li>The player wins!</li>
+  </ul>
+```
+Good luck.

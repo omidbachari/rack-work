@@ -211,11 +211,11 @@ Rack::Handler::WEBrick.run app
 
 This will have the same apparent behavior as our previous configuration, with a less unorthodox approach. You'll notice that Proc syntax and behaviour aligns nicely with what WEBrick expects from our app. So, let's make a more useful app, which is the challenge of this lesson.
 
-# Challenge
+# BEERS: Implementing Routes - Challenge 1
 
 Right now, our server responds with ```Hello, world!``` in the browser. To anything. That means ```localhost:8080```, ```localhost:8080/foo``` and ```localhost:8080/bar``` all give us ```Hello, world!```. The server is sending us the same content, every time.
 
-Since our environment contains the value of ```PATH_INFO```, we know we have access to the path. Our rack app should provide different behavior, depending on the value of ```PATH_INFO```. Let's build a rack app that gives us different routes, and responds with different strings accordingly.
+Since our environment contains the value of ```PATH_INFO```, we know we have access to the path. Our rack app should provide different behavior, depending on the value of ```PATH_INFO```. Let's build a rack app that gives us different **routes**, which are paths that the interpreter can choose from in responding to the server. We should respond with different HTML strings according to the route accessed.
 
 Specifically, we want "/beers" to return this string of HTML: ```<h1>BEERS</h1>```. Every other path should return ```<h1>404: Page does not exist.</h1>```.
 
@@ -230,11 +230,15 @@ require 'rack'
 
 app = Proc.new do |env|
   # We can call env in here.
-  # We can use flow control to determine what block of code to return, in the same format as the array below.
   [200, {"Content-Type" => "text/html"}, ["Hello, world!"]]
 end
 
 Rack::Handler::WEBrick.run app
 ```
+Good luck.
 
-Basic Ruby logic can provide us with the solution that we're looking for. Good luck.
+# BEERS: Implementing Parameters - Challenge 2
+
+Now that we know how to create different behavior depending on the path found in the environment, the next step is to use some of the information from the path to inform the string that we send to the server from our rack app. We need to take information dynamically from the URL and display it on our page for our predetermined "/beers" route.
+
+Specifically, we want to point our browser to "/beers/pilsner" or "/beers/IPA" or "/beers/stout" and be able to see "PILSNER" or "IPA" or "STOUT" as our headline. Every other path should return ```<h1>404: Page does not exist.</h1>```. Good luck.

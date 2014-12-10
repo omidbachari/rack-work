@@ -1,6 +1,6 @@
 # Introduction to Rack Applications
 
-How does Rails work? As developers, we don't want to take our tools on faith. We want to know what's under the hood and how things work. This article and exercise explain one part of the vast picture of Rails (and Sinatra, too). Learning about **rack** is an important part of understanding how Ruby web technologies work.
+How does Rails work? As developers, we don't want to take our tools on faith. We want to know what's under the hood and how things work. This article and exercises explain one part of the vast picture of Rails (and Sinatra, too). Learning about **rack** is an important part of understanding how Ruby web technologies work.
 
 According to the official README:
 
@@ -17,7 +17,7 @@ Before we dive into the technical details, it would help to illuminate how the H
 3. Our rack app returns a response to the server.
 4. The server sends a response back to the browser.
 
-At heart, the road map illustrates the purpose of rack. With our browser and server running, the browser sends a request by pointing to a URL. The server then provides us some magic to clean up the request and turn it into something we can use. That's where rack finds it's place. Rack is the first stop for that parsed and ready HTTP request. Rack can then take the parsed request and hand it to Rails or Sinatra. For this assignment, our rack app will provide all of the behavior, in and of itself. Since a rack app is just Ruby code, that means we have an opportunity to use this easy to learn and expressive language to determine the response we'll send to the server. The server then sends (usually) a string of HTML back to the browser for rendering.
+At heart, the road map illustrates the purpose of rack. With our browser and server running, the browser sends a request by pointing to a URL. The server then provides us some magic to clean up the request and turn it into something we can use. That's where rack finds it's place. Rack is the first stop for that parsed and ready HTTP request. Rack could then take the parsed request and hand it to Rails or Sinatra. For this assignment, our rack app will provide all of the behavior, in and of itself. So, we will handle the parsed request. Since a rack app is just Ruby code, that means we have an opportunity to use this easy to learn and expressive language to determine the response we'll send to the server. The server then sends (usually) a string of HTML back to the browser for rendering.
 
 ## Building a Rack Application
 
@@ -32,7 +32,7 @@ Create a new ruby program called **app.rb**. The command to run a server, among 
 ```
 require "rack"
 ```
-Now, create the server and pass it the name of our app, which is currently set to ```nil```.
+Now, create the server and pass it the name of our app, which is currently assigned to ```nil```.
 ```
 app = nil
 
@@ -61,9 +61,9 @@ localhost - - [05/Dec/2014:10:35:05 EST] "GET / HTTP/1.1" 500 320
 - -> /
 ```
 
-The request made it to the server! But it appears we got a code 500 Internal Server Error response, because WEBrick tried to call #call on our app, which is not a method available to the Nil Class. The error has taught us what the server is expecting. Our app needs to be an object that has the #call method.
+The request made it to the server! But it appears we got a code 500, because WEBrick tried to call #call on our app, which is not a method available to the Nil Class. That causes an "Internal Server Error". But the error has showed us what the server is expecting. Our app needs to be an object that has the #call method.
 
-Let's try to fix that in a hacky way. We're just going to follow the error and see where it takes us. When we have finished this part of the exercise, we'll stop being hacky. Here is what's in **app.rb** now.
+Let's try to fix that in a hacky way. We're just going to follow the error and see where it takes us. At the end of this lesson, we'll stop being hacky. Here is what's in **app.rb** now.
 
 ```
 require 'rack'
@@ -89,7 +89,8 @@ localhost - - [05/Dec/2014:11:30:16 EST] "GET / HTTP/1.1" 500 315
 ```
 Interesting. The server expected #call and that's what we gave it. Now, the target has advanced. We have the right method, but the server tried to give it an argument, and we didn't define the method to take an argument.
 
-What is happening is that our server is trying to call #call on our app, and it's also trying to pass the parsed HTTP request into the #call method, as an argument. This is the next important event in our road map. Having the parsed HTTP request available in our app will later allow us to program all kinds of exciting behavior in response to the HTTP request. So, in what way is the HTTP request prepared for our use? The parsed HTTP request is a hash called the **environment**. A hash is a Ruby datastructure that we should know how to navigate.
+What is happening is that our server is trying to call #call on our app, and it's also trying to pass the parsed HTTP request into the #call method, as an argument. This is the next important event in our road map.
+Having the parsed HTTP request available in our app will later allow us to program all kinds of exciting behavior in response to the HTTP request. So, in what way is the HTTP request prepared for our use? The parsed HTTP request is a hash called the **environment**. A hash is a Ruby data type that we should know how to navigate. See more about the Hash Class in the Ruby docs.
 
 Now, let's provide for #call in our code, that takes an argument, and see what happens next. Since we know the server is going to pass the environment into #call, we should ```puts``` it. It would help to also call the #inspect method on the environment to see what the data structure looks like. Here is **app.rb**:
 
@@ -155,7 +156,9 @@ Not only should we take in the environment, but we have to return something.
 localhost - - [05/Dec/2014:11:56:13 EST] "GET / HTTP/1.1" 500 320
 - -> /
 ```
-While this error is not completely informative, we know what it's trying to do. The server is attempting to parse an HTTP response. It's specifically looking for an array containing HTML. Let's cure that error. We're still being hacky, but we can have #call return the data that the server expects (a properly structured HTTP response), by doing the following:
+While this error is not completely informative, we know what it's trying to do. The server is attempting to parse an HTTP response. It's specifically looking for an array containing HTML.
+
+Let's cure that error. We're still being hacky, but we can have #call return the data that the server expects (a properly structured HTTP response), by doing the following:
 
 ```
 require 'rack'
@@ -209,7 +212,7 @@ end
 Rack::Handler::WEBrick.run app
 ```
 
-This will have the same apparent behavior as our previous configuration, with a less unorthodox approach. You'll notice that Proc syntax and behaviour aligns nicely with what WEBrick expects from our app. So, let's make a more useful app, which is the challenge of this lesson.
+This will have the same apparent behavior as our previous configuration, with a less unorthodox approach. You'll notice that Proc syntax and behavior align nicely with what WEBrick expects from our app. So, let's make a more useful app, which is the challenge of this lesson.
 
 # BEERS: Implementing Routes - Challenge 1
 
@@ -241,7 +244,7 @@ Good luck.
 
 Now that we know how to create different behavior depending on the path found in the environment, the next step is to use some of the information from the path to inform the string that we send to the server from our rack app. We need to take information dynamically from the URL, as a **parameter**, and move it through our rack app. Our goal is to display it on our page for our predetermined "/beers" routes.
 
-Specifically, we want to point our browser to "/beers/pilsner" or "/beers/IPA" or "/beers/stout" and be able to see "PILSNER" or "IPA" or "STOUT" as our headlines, respectively. Every other path should return ```<h1>404: Page does not exist.</h1>```. Good luck.
+Specifically, we want to point our browser to "/beers/pilsner" or "/beers/IPA" or "/beers/stout" and be able to see "PILSNER" or "IPA" or "STOUT" as our headlines, respectively. Every other path should return ```<h1>404: Page does not exist.</h1>```.  This requires us to dynamically take part of the string that comes after "/beers" and call it in our HTML body. Good luck.
 
 # Parameters II: Implementing Rock, Paper, Scissors - Challenge 3
 
@@ -259,4 +262,4 @@ The output in the browser should look like this in raw HTML:
     <li>The player wins!</li>
   </ul>
 ```
-Good luck.
+This exercise will expand the amount of logic that we're using in our rack application. Good luck.

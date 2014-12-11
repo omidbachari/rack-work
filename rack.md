@@ -6,11 +6,13 @@ According to the official README:
 
 "Rack provides a minimal, modular and adaptable interface for developing web applications in Ruby. By wrapping HTTP requests and responses in the simplest way possible, it unifies and distills the API for web servers, web frameworks, and software in between (the so-called middleware) into a single method call." - The official Rack GitHub repo [can be found here.](https://github.com/rack/rack)
 
-The key takeaway is that a rack application is just a Ruby object. It's Ruby code. This object sits between, e.g., Rails and a server. Without a web framework like Rails, we can also create a rack app directly. That's what we will do here.
+It makes somewhat more sense from blogger Adam Hawkins:  
+
+"Rack is the HTTP interface for Ruby. Rack defines a standard interface for interacting with HTTP and connecting web servers. Rack makes it easy to write HTTP facing applications in Ruby. Rack applications are shockingly simple. There is the code that accepts a request and code serves the response. Rack defines the interface between the two." - [Rack from the Beginning](http://hawkins.io/2012/07/rack_from_the_beginning/)
 
 ## The Road Map
 
-Before we dive into the technical details, it would help to illuminate how the HTTP process and rack application work. That will inform how we build our first rack app. Let's break down the basic process:
+Before we dive into the technical details, it would help to illuminate how the HTTP process and rack application work at a basic level. That will inform how we build our first rack app. Let's break down the basic process:
 
 1. We send an HTTP request.
 2. The server parses the HTTP request and passes it into our rack app.
@@ -20,8 +22,6 @@ Before we dive into the technical details, it would help to illuminate how the H
 At heart, the road map illustrates the purpose of rack. With our browser and server running, the browser sends a request by pointing to a URL. The server then provides us some magic to clean up the request and turn it into something we can use. That's where rack finds it's place. Rack is the first stop for that parsed and ready HTTP request. Rack could then take the parsed request and hand it to Rails or Sinatra. For this assignment, our rack app will provide all of the behavior, in and of itself. So, we will handle the parsed request. Since a rack app is just Ruby code, that means we have an opportunity to use this easy to learn and expressive language to determine the response we'll send to the server. The server then sends (usually) a string of HTML back to the browser for rendering.
 
 ## Building a Rack Application
-
-<!-- *Emphasis about the web server: The web server and the rack application are two separate things. The web server is responsible for taking information back and forth from the browser. The web server parses the HTTP request and response into usable information. The rack application is responsible for taking in the parsed HTTP request and returning a response to the server.* -->
 
 ### Send HTTP Request
 
@@ -158,7 +158,7 @@ localhost - - [05/Dec/2014:11:56:13 EST] "GET / HTTP/1.1" 500 320
 ```
 While this error is not completely informative, we know what it's trying to do. The server is attempting to parse an HTTP response. It's specifically looking for an array containing HTML.
 
-Let's cure that error. We're still being hacky, but we can have #call return the data that the server expects (a properly structured HTTP response), by doing the following:
+Let's cure that error. We're still being hacky, but we can have #call return the data that the server expects (a properly structured HTTP response; aka, a **triplet**), by doing the following:
 
 ```
 require 'rack'
@@ -233,11 +233,32 @@ require 'rack'
 
 app = Proc.new do |env|
   # We can call env in here.
+
   [200, {"Content-Type" => "text/html"}, ["Hello, world!"]]
 end
 
 Rack::Handler::WEBrick.run app
 ```
+However, the Rack Class provides us with some special objects to make rack app development convenient.
+
+```
+require 'rack'
+
+app = Proc.new do |env|
+  request = Rack::Request.new(env)
+  response = Rack::Response.new(env)
+
+  [200, {"Content-Type" => "text/html"}, ["Hello, world!"]]
+end
+
+Rack::Handler::WEBrick.run app
+```
+Using a language shell for Ruby like Pry or IRB. Call #methods on ```request``` and on ```response```. See what is available to you.
+
+Hint: you can build the response triplet using these methods. For example, make this assignment ```response.body = ["Hello, World"]```.
+
+
+
 Good luck.
 
 # BEERS: Implementing Parameters - Challenge 2

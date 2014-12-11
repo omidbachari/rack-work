@@ -2,13 +2,10 @@ require 'rack'
 require 'pry'
 
 app = Proc.new do |env|
-  if env['PATH_INFO'] == '/'
-    [200, {"Content-Type" => "text/html"}, ["Home page"]]
-  elsif env['PATH_INFO'] == "/beers"
-    [200, {"Content-Type" => "text/html"}, ["I love beers!"]]
-  else
-    [200, {"Content-Type" => "text/html"}, ["GTFO"]]
-  end
+  request = Rack::Request.new(env)
+  response = Rack::Response.new(env)
+  binding.pry
+  [200, {"Content-Type" => "text/html"}, ["Home page"]]
 end
 
 Rack::Handler::WEBrick.run app

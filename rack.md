@@ -255,7 +255,7 @@ Rack::Handler::WEBrick.run app
 ```
 Using a language shell for Ruby like Pry or IRB. Call #methods on ```request``` and on ```response```. See what is available to you.
 
-Hint: you can build the response triplet using these methods. For example, make this assignment ```response.body = ["Hello, World"]```.
+Hint: you can build the response triplet using these methods. For example, make this assignment ```response.body = ["Hello, World"]```.  
 
 Good luck.
 
@@ -263,7 +263,9 @@ Good luck.
 
 Now that we know how to create different behavior depending on the path found in the environment, the next step is to use some of the information from the path to inform the string that we send to the server from our rack app. We need to take information dynamically from the URL, as a **parameter**, and move it through our rack app. Our goal is to display it on our page for our predetermined "/beers" routes.
 
-Specifically, we want to point our browser to "/beers/pilsner" or "/beers/IPA" or "/beers/stout" and be able to see "PILSNER" or "IPA" or "STOUT" as our headlines, respectively. Every other path should return ```<h1>404: Page does not exist.</h1>```.  This requires us to dynamically take part of the string that comes after "/beers" and call it in our HTML body. Good luck.
+Specifically, we want to point our browser to "/beers/pilsner" or "/beers/IPA" or "/beers/stout" and be able to see "PILSNER" or "IPA" or "STOUT" as our headlines, respectively. Every other path should return ```<h1>404: Page does not exist.</h1>```.  This requires us to dynamically take part of the string that comes after "/beers" and call it in our HTML body.  
+
+Good luck.
 
 # Parameters II: Implementing Rock, Paper, Scissors - Challenge 3
 
@@ -281,4 +283,6 @@ The output in the browser should look like this in raw HTML:
     <li>The player wins!</li>
   </ul>
 ```
-This exercise will expand the amount of logic that we're using in our rack application. Good luck.
+This exercise will expand the amount of logic that we're using in our rack application.  
+
+Good luck.

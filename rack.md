@@ -246,16 +246,15 @@ require 'rack'
 
 app = Proc.new do |env|
   request = Rack::Request.new(env)
-  response = Rack::Response.new(env)
-
+  # Call on request.methods to see what is available.
   [200, {"Content-Type" => "text/html"}, ["Hello, world!"]]
 end
 
 Rack::Handler::WEBrick.run app
 ```
-Using a language shell for Ruby like Pry or IRB. Call #methods on ```request``` and on ```response```. See what is available to you.
+Using a language shell for Ruby like Pry or IRB. Call #methods on ```request```. See what is available to you.
 
-Hint: you can build the response triplet using these methods. For example, make this assignment ```response.body = ["Hello, World"]```.  
+Hint: You can build parts of the response triplet by calling methods on this object: ```Rack::Response.new(env)```. For example, try this assignment ```response.body = ["Hello, World"]```.  
 
 Good luck.
 

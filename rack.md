@@ -175,7 +175,7 @@ Rack::Handler::WEBrick.run app
 
 ```
 
-Our last error complained that there was no array to call #each on. Now, ```["Hello, world!"]``` stands in the place that the #each method was previously called by the server. Let's see if this advances us to the next step.
+Our last error complained that there was no array to call #each on. Now, ```["Hello, world!"]``` stands in the place that the #each method was previously called by the server. Let's see if this advances us to the next step. Notice: we take in the environment with the implementation above, but we aren't doing anything with it.
 
 We will re-run the server and hope for the best when we go to ```localhost:8080```. What we want is the response code 200 that we put in our array and we also want the page to be properly rendered in our browser. Our server says:
 
@@ -239,7 +239,7 @@ end
 
 Rack::Handler::WEBrick.run app
 ```
-However, the Rack Class provides us with some special objects to make rack app development convenient.
+In addition, the Rack Class provides us with some special objects to make rack app development convenient.
 
 ```
 require 'rack'
@@ -256,8 +256,6 @@ Rack::Handler::WEBrick.run app
 Using a language shell for Ruby like Pry or IRB. Call #methods on ```request``` and on ```response```. See what is available to you.
 
 Hint: you can build the response triplet using these methods. For example, make this assignment ```response.body = ["Hello, World"]```.
-
-
 
 Good luck.
 
